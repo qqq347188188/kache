@@ -11,30 +11,30 @@
   "actions": [
     {
       "method": "AddBlueDiamonds",
-      "count": 99,
-      "args": [{"t": "i64", "v": 99}]
+      "count": 999999999,
+      "args": [{"t": "i64", "v": 999999999}]
     },
     {
       "method": "AddCoin",
-      "count": 99,
-      "args": [{"t": "i64", "v": 99}]
+      "count": 999999999,
+      "args": [{"t": "i64", "v": 999999999}]
     },
     {
       "method": "AddGoldKey",
-      "count": 99,
-      "args": [{"t": "i64", "v": 99}]
+      "count": 999999,
+      "args": [{"t": "i64", "v": 999999}]
     },
     {
       "method": "AddSilverKey",
-      "count": 99,
-      "args": [{"t": "i64", "v": 99}]
+      "count": 999999,
+      "args": [{"t": "i64", "v": 999999}]
     },
     {
       "method": "AddItem",
-      "count": 99,
+      "count": 999999,
       "args": [
         {"t": "str", "v": "Money"},
-        {"t": "i64", "v": 99}
+        {"t": "i64", "v": 999999}
       ]
     },
     {
