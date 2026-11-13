@@ -1,0 +1,39 @@
+name: build-dylib
+
+# 只产出 GMInject.dylib，不生成 IPA、不需要证书
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'GMInject.m'
+      - 'gm_offsets.h'
+      - 'build.sh'
+      - 'Makefile'
+      - '.github/workflows/build-dylib.yml'
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 选择 Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: 编译 dylib
+        run: |
+          chmod +x build.sh
+          bash build.sh
+
+      - name: 核对产物
+        run: |
+          lipo -info build/GMInject.dylib
+          file build/GMInject.dylib
+
+      - name: 上传 dylib
+        uses: actions/upload-artifact@v4
+        with:
+          name: GMInject.dylib
+          path: build/GMInject.dylib
+          if-no-files-found: error
