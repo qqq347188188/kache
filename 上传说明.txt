@@ -1,0 +1,69 @@
+只编译 GMInject.dylib
+================================================================
+
+【这个文件夹里面的内容就是 GitHub 仓库根目录】
+扁平结构，全部文件在根下，不要连 github-upload 这层一起拖。
+
+  .github/workflows/build-dylib.yml
+  GMInject.m              源码
+  gm_offsets.h            RVA 头文件（当前占位，全返回 0）
+  build.sh                编译脚本
+  Makefile
+  GMConfig示例.json       dylib 运行配置模板（不进 artifact）
+  .gitattributes / .gitignore
+  上传说明.txt
+
+----------------------------------------------------------------
+一、上传
+
+  GitHub 新建空仓库（不勾 README / .gitignore / license），然后在本文件夹：
+
+    git init
+    git add -A
+    git commit -m "GMInject"
+    git branch -M main
+    git remote add origin https://github.com/<用户名>/<仓库名>.git
+    git push -u origin main
+
+  网页上传：先把根目录这些文件拖进去，再 Add file -> Create new file，
+  文件名填 .github/workflows/build-dylib.yml，把本地那份内容粘进去提交。
+  （.github 是隐藏目录，网页拖拽容易漏，优先用 git 命令。）
+
+----------------------------------------------------------------
+二、生成 dylib
+
+  Actions -> build-dylib -> Run workflow -> Run workflow
+  约 1-2 分钟后，页面底部 Artifacts 下载 GMInject.dylib。
+  解压只有 build/GMInject.dylib 这一个文件（fat arm64 + arm64e，ad-hoc 签名）。
+
+  不产出 IPA，不跑注入脚本，不需要任何 Apple 证书。
+  arm64e 若当前 Xcode 编不过会自动跳过，仍产出 arm64 版。
+
+----------------------------------------------------------------
+三、拿到 dylib 之后（本仓库不负责注入）
+
+  越狱 / RootHide：放到
+    /Library/MobileSubstrate/DynamicLibraries/GMInject.dylib
+  同目录放 GMInject.plist：
+    Filter = { Bundles = ("com.midagame.truckstar"); };
+
+  TrollStore 改包：给 Mach-O 加
+    LC_LOAD_DYLIB @executable_path/Frameworks/GMInject.dylib
+  本机 c:\Users\Administrator\CodeBuddy\20261113121817\GMInject\inject_ipa.py
+  可以做这件事（但它会重打包整个 IPA，不在本仓库里）。
+
+  运行时配置放 App 沙盒 Documents/GMConfig.json（把 GMConfig示例.json 改名即可）；
+  日志在 Documents/GMInject.log。不配置也能跑，会写一份默认模板并执行
+  AddBlueDiamonds(999999999)。
+
+----------------------------------------------------------------
+四、如果有真实 GM 偏移
+
+  本机跑 python tools\gen_gm_offsets.py <Il2CppDumper 的 script.json>
+  会覆盖 GMInject/gm_offsets.h，把覆盖后的文件替换到本仓库再 push，
+  重跑 workflow 即可启用 RVA 直调。不替换也没关系，dylib 自动走
+  IL2CPP 反射模式。
+
+----------------------------------------------------------------
+本包不含：inject_ipa.py、使用说明.txt、tools\、il2cpp\、物品代码表、
+排查报告 —— 这些都只在本机，用不到就不上传。
