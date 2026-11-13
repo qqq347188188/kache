@@ -32,7 +32,8 @@
 ----------------------------------------------------------------
 二、生成 dylib
 
-  Actions -> build-dylib -> Run workflow -> Run workflow
+  Actions -> build-dylib -> Run workflow
+  界面上有 runner 下拉框，默认 macos-13；报标签错误时换一个再点 Run workflow。
   约 1-2 分钟后，页面底部 Artifacts 下载 GMInject.dylib。
   解压只有 build/GMInject.dylib 这一个文件（fat arm64 + arm64e，ad-hoc 签名）。
 
@@ -63,6 +64,29 @@
   会覆盖 GMInject/gm_offsets.h，把覆盖后的文件替换到本仓库再 push，
   重跑 workflow 即可启用 RVA 直调。不替换也没关系，dylib 自动走
   IL2CPP 反射模式。
+
+----------------------------------------------------------------
+五、runner 报错排查
+
+  报错 The configuration 'macos-14-arm64-us-default' is not supported
+  表示 macos-14 被解析成 arm64 标准 runner，而该配置在你账户/仓库不可用
+  （常见于私有仓库无 macOS 配额，或 arm64 标签未对该仓库开放）。
+  编译 iOS dylib 是交叉编译，主机是 Intel 还是 arm64 都一样，
+  所以默认已换成 macos-13（Intel 标签）。
+
+  在 Actions -> Run workflow 界面用 runner 下拉框可直接切换：
+    macos-13 / macos-14 / macos-15 / macos-latest
+  换标签重试不需要改文件、不需要重新 push。
+
+  四个标签都报同类错时：
+    - 把仓库设为 Public（macOS runner 对公开仓库免费）
+    - Settings -> Actions -> General 确认 Actions 已启用
+    - 检查账户 Billing / Actions 分钟数
+    - 确认改过的 workflow 已经 commit + push 到仓库
+
+  另外已去掉 sudo xcode-select -s /Applications/Xcode.app/... 这步，
+  改为只打印 xcodebuild -version 和 iOS SDK 路径，避免部分 runner 上
+  该路径不存在导致 job 直接失败。
 
 ----------------------------------------------------------------
 本包不含：inject_ipa.py、使用说明.txt、tools\、il2cpp\、物品代码表、
