@@ -1,0 +1,49 @@
+{
+  "enabled": true,
+  "_说明": "把本文件改名为 GMConfig.json 放到 App 沙盒 Documents 目录，用 Filza / TrollStore 文件管理编辑，改完重进游戏生效，不需要重编译 dylib",
+  "delay": 12,
+  "probe": false,
+  "loop": 1,
+  "interval": 0,
+  "_probe说明": "probe=true 时把 BackendGameVirtualPurchaseManager / BackendManager 的方法表打印到 GMInject.log，用来确认真实方法名与参数个数",
+  "_static说明": "static=true 表示按静态方法调用（不找单例）；反射模式会自动尝试 get_Instance / Instance 静态字段",
+  "_args说明": "args 里 t 可为 i32 / i64 / str / bool；值类型传地址，字符串由 il2cpp_string_new 构造",
+  "actions": [
+    {
+      "method": "AddBlueDiamonds",
+      "count": 999999999,
+      "args": [{"t": "i64", "v": 999999999}]
+    },
+    {
+      "method": "AddCoin",
+      "count": 999999999,
+      "args": [{"t": "i64", "v": 999999999}]
+    },
+    {
+      "method": "AddGoldKey",
+      "count": 999999,
+      "args": [{"t": "i64", "v": 999999}]
+    },
+    {
+      "method": "AddSilverKey",
+      "count": 999999,
+      "args": [{"t": "i64", "v": 999999}]
+    },
+    {
+      "method": "AddItem",
+      "count": 999999,
+      "args": [
+        {"t": "str", "v": "Money"},
+        {"t": "i64", "v": 999999}
+      ]
+    },
+    {
+      "method": "AddItem",
+      "count": 99,
+      "args": [
+        {"t": "str", "v": "BaiJian_HongQiChe"},
+        {"t": "i64", "v": 99}
+      ]
+    }
+  ]
+}
