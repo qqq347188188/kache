@@ -1,8 +1,21 @@
 name: build-dylib
 
 # 只产出 GMInject.dylib，不生成 IPA、不需要证书
+# 若某个 runner 标签报 "configuration ... is not supported"，
+# 在 Actions 界面 Run workflow 时从 runner 下拉框换一个标签重试，不用改文件。
 on:
   workflow_dispatch:
+    inputs:
+      runner:
+        description: 'macOS runner 标签（默认 macos-13）'
+        required: false
+        default: 'macos-13'
+        type: choice
+        options:
+          - macos-13
+          - macos-14
+          - macos-15
+          - macos-latest
   push:
     paths:
       - 'GMInject.m'
@@ -13,13 +26,16 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    # push 触发时 inputs 为空，回退到 macos-13
+    runs-on: ${{ github.event.inputs.runner || 'macos-13' }}
     steps:
       - name: 检出仓库
         uses: actions/checkout@v4
 
-      - name: 选择 Xcode
-        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+      - name: 检查 Xcode 与 iOS SDK
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-path
 
       - name: 编译 dylib
         run: |
